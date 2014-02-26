@@ -10,6 +10,10 @@ include(YarpPlugin)
 #unset(ICUB_COMPILE_EMBOBJ_LIBRARY\)
 set(ICUB_COMPILE_EMBOBJ_LIBRARY OFF CACHE INTERNAL "use the embObjLib lib" FORCE)
 
+if(ICUB_COMPILE_COMAN_LIBRARY)
+  find_package(COMAN_shared)
+endif()
+
 project(icubmod)
 
 add_subdirectory(debugStream)
