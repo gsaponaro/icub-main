@@ -3523,6 +3523,80 @@ bool CanBusMotionControl::getControlModesRaw(int *v)
     return true;
 }
 
+int from_modevocab_to_modeint (int modevocab)
+{
+    switch (modevocab)
+    {
+    case VOCAB_CM_IDLE:
+        return MODE_IDLE;
+        break;
+    case VOCAB_CM_POSITION:
+        return MODE_POSITION;
+        break;
+    /*case VOCAB_CM_MIXED:
+        return MODE_MIXED;
+        break;
+    case VOCAB_CM_POSITION_DIRECT:
+        return MODE_DIRECT;
+        break;*/
+    case VOCAB_CM_VELOCITY:
+        return MODE_VELOCITY;
+        break;
+    case VOCAB_CM_TORQUE:
+        return MODE_TORQUE;
+        break;
+    case VOCAB_CM_IMPEDANCE_POS:
+        return MODE_IMPEDANCE_POS;
+        break;
+    case VOCAB_CM_IMPEDANCE_VEL:
+        return MODE_IMPEDANCE_VEL;
+        break;
+    case VOCAB_CM_OPENLOOP:
+        return  MODE_OPENLOOP;
+        break;
+    default:
+        return VOCAB_CM_UNKNOWN;
+        break;
+    }
+}
+
+int from_modeint_to_modevocab (int modeint)
+{
+    switch (modeint)
+    {
+    case MODE_IDLE:
+        return VOCAB_CM_IDLE;
+        break;
+    case MODE_POSITION:
+        return VOCAB_CM_POSITION;
+        break;
+    /*case MODE_MIXED:
+        return VOCAB_CM_MIXED;
+        break;
+    case MODE_DIRECT:
+        return VOCAB_CM_POSITION_DIRECT;
+        break;*/
+    case MODE_VELOCITY:
+        return VOCAB_CM_VELOCITY;
+        break;
+    case MODE_TORQUE:
+        return VOCAB_CM_TORQUE;
+        break;
+    case MODE_IMPEDANCE_POS:
+        return VOCAB_CM_IMPEDANCE_POS;
+        break;
+    case MODE_IMPEDANCE_VEL:
+        return VOCAB_CM_IMPEDANCE_VEL;
+        break;
+    case MODE_OPENLOOP:
+        return VOCAB_CM_OPENLOOP;
+        break;
+    default:
+        return VOCAB_CM_UNKNOWN;
+        break;
+    }
+}
+
 bool CanBusMotionControl::getControlModeRaw(int j, int *v)
 {
     CanBusResources& r = RES(system_resources);
@@ -3540,33 +3614,8 @@ bool CanBusMotionControl::getControlModeRaw(int j, int *v)
     _mutex.wait();
     s = r._bcastRecvBuffer[j]._controlmodeStatus;
   
-    switch (s)
-    {
-    case MODE_IDLE:
-        *v=VOCAB_CM_IDLE;
-        break;
-    case MODE_POSITION:
-        *v=VOCAB_CM_POSITION;
-        break;
-    case MODE_VELOCITY:
-        *v=VOCAB_CM_VELOCITY;
-        break;
-    case MODE_TORQUE:
-        *v=VOCAB_CM_TORQUE;
-        break;
-    case MODE_IMPEDANCE_POS:
-        *v=VOCAB_CM_IMPEDANCE_POS;
-        break;
-    case MODE_IMPEDANCE_VEL:
-        *v=VOCAB_CM_IMPEDANCE_VEL;
-        break;
-    case MODE_OPENLOOP:
-        *v=VOCAB_CM_OPENLOOP;
-        break;
-    default:
-        *v=VOCAB_CM_UNKNOWN;
-        break;
-    }
+    *v=from_modeint_to_modevocab(s);
+
     _mutex.post();
 
     return true;
@@ -3580,7 +3629,27 @@ bool CanBusMotionControl::getControlModesRaw(const int n_joint, const int *joint
 
 bool CanBusMotionControl::setControlModeRaw(const int j, const int mode)
 {
-    return NOT_YET_IMPLEMENTED("setControlModeRaw single joint");
+    if (!(j >= 0 && j <= (CAN_MAX_CARDS-1)*2))
+        return false;
+
+    DEBUG_FUNC("Calling SET_CONTROL_MODE RAW\n");
+
+    if (mode == VOCAB_CM_IDLE || mode == VOCAB_CM_FORCE_IDLE)
+    {
+        disablePidRaw(j); //@@@ TO BE REMOVED AND PUT IN FIRMWARE INSTEAD
+        disableAmpRaw(j); //@@@ TO BE REMOVED AND PUT IN FIRMWARE INSTEAD
+    }
+    else
+    {
+        enablePidRaw(j); //@@@ TO BE REMOVED AND PUT IN FIRMWARE INSTEAD
+        enableAmpRaw(j); //@@@ TO BE REMOVED AND PUT IN FIRMWARE INSTEAD
+        int v = from_modevocab_to_modeint(mode);
+
+        if (v==VOCAB_CM_UNKNOWN) return false;
+        _writeByte8(CAN_SET_CONTROL_MODE,j,v);
+    }
+
+    return true;
 }
 
 bool CanBusMotionControl::setControlModesRaw(const int n_joint, const int *joints, int *modes)
