@@ -20,18 +20,28 @@
 #define LAST_BLL_BUILD             71
 #define LAST_MC4_BUILD             71
 
-#define MODE_IDLE					0
-#define MODE_POSITION 				1
-#define MODE_VELOCITY				2
-#define MODE_TORQUE					3
-#define MODE_IMPEDANCE_POS			4
-#define MODE_IMPEDANCE_VEL			5
-#define MODE_CALIB_ABS_POS_SENS		0x10
-#define MODE_CALIB_HARD_STOPS		0x20
-#define MODE_HANDLE_HARD_STOPS		0x30
-#define MODE_MARGIN_REACHED    		0x40
+#define MODE_IDLE                       0x00
+#define MODE_POSITION                   0x01
+#define MODE_VELOCITY                   0x02
+#define MODE_TORQUE                     0x03
+#define MODE_IMPEDANCE_POS              0x04 //deprecated 
+#define MODE_IMPEDANCE_VEL              0x05 //deprecated
+#define MODE_CURRENT                    0x06
+#define MODE_MIXED                      0x07
+#define MODE_DIRECT                     0x08
+//      RESERVED force idle             0x09
+#define MODE_CALIB_ABS_POS_SENS         0x10 //internal calib status
+#define MODE_CALIB_HARD_STOPS           0x20 //internal calib status
+#define MODE_HANDLE_HARD_STOPS          0x30 //internal calib status
+#define MODE_MARGIN_REACHED             0x40 //internal calib status
+#define MODE_CALIB_ABS_AND_INCREMENTAL  0x41 //internal calib status
+#define MODE_OPENLOOP                   0x50
+//      RESERVED calibration            0x60
 
-#define MODE_OPENLOOP               0x50
+#define MODE_HW_FAULT                   0xA0 //internal status
+#define MODE_NOT_CONFIGURED             0xB0 //internal status
+#define MODE_CONFIGURED                 0xB1 //internal status
+#define MODE_UNKNOWN_ERROR              0xFF //internal status
 
 /*
  * this is 8 bits long, MSB is the channel (0 or 1). 
