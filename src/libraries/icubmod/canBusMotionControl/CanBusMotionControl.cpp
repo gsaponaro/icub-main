@@ -3491,39 +3491,13 @@ bool CanBusMotionControl::getControlModesRaw(int *v)
     for (i = 0; i < r.getJoints(); i++)
     {
         temp = int(r._bcastRecvBuffer[i]._controlmodeStatus);
-        switch (temp)
-        {
-            case MODE_IDLE:
-                v[i]=VOCAB_CM_IDLE;
-                break;
-            case MODE_POSITION:
-                v[i]=VOCAB_CM_POSITION;
-                break;
-            case MODE_VELOCITY:
-                v[i]=VOCAB_CM_VELOCITY;
-                break;
-            case MODE_TORQUE:
-                *v=VOCAB_CM_TORQUE;
-                break;
-            case MODE_IMPEDANCE_POS:
-                v[i]=VOCAB_CM_IMPEDANCE_POS;
-                break;
-            case MODE_IMPEDANCE_VEL:
-                v[i]=VOCAB_CM_IMPEDANCE_VEL;
-                break;
-            case MODE_OPENLOOP:
-                v[i]=VOCAB_CM_OPENLOOP;
-                break;
-            default:
-                v[i]=VOCAB_CM_UNKNOWN;
-                break;
-        }
+        *v=from_modeint_to_modevocab(temp);
     }
     _mutex.post();
     return true;
 }
 
-int from_modevocab_to_modeint (int modevocab)
+int CanBusMotionControl::from_modevocab_to_modeint (int modevocab)
 {
     switch (modevocab)
     {
@@ -3560,7 +3534,7 @@ int from_modevocab_to_modeint (int modevocab)
     }
 }
 
-int from_modeint_to_modevocab (int modeint)
+int CanBusMotionControl::from_modeint_to_modevocab (int modeint)
 {
     switch (modeint)
     {
