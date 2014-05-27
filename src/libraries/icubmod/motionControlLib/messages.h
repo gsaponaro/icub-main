@@ -186,18 +186,19 @@
  * when in bcast mode, messages are sent periodically by the controller
  *
  */
-#define CAN_BCAST_NONE				0
-#define CAN_BCAST_POSITION			1
-#define CAN_BCAST_PID_VAL			2
-#define CAN_BCAST_STATUS			3
-#define CAN_BCAST_CURRENT			4
-#define CAN_BCAST_OVERFLOW			5
-#define CAN_BCAST_PRINT				6
-#define CAN_BCAST_VELOCITY			7
-#define CAN_BCAST_PID_ERROR			8
-#define CAN_BCAST_DEBUG				9
-#define CAN_BCAST_MOTOR_POSITION   10
-#define CAN_BCAST_MOTOR_SPEED      11
-#define CAN_BCAST_MAX_MSGS		   12
+#define CAN_BCAST_NONE               0
+#define CAN_BCAST_POSITION           1
+#define CAN_BCAST_PID_VAL            2
+#define CAN_BCAST_STATUS             3
+#define CAN_BCAST_CURRENT            4
+#define CAN_BCAST_OVERFLOW           5
+#define CAN_BCAST_PRINT              6
+#define CAN_BCAST_VELOCITY           7
+#define CAN_BCAST_PID_ERROR          8
+#define CAN_BCAST_DEBUG              9
+#define CAN_BCAST_MOTOR_POSITION    10
+#define CAN_BCAST_MOTOR_SPEED       11
+#define CAN_BCAST_ADDITIONAL_STATUS 12
+#define CAN_BCAST_MAX_MSGS          13
 
 #endif
