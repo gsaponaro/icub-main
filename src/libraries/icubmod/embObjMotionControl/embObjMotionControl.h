@@ -49,6 +49,8 @@ using namespace std;
 
 #define EMBMC_SIZE_INFO     128
 
+#undef IMPLEMENT_DEBUG_INTERFACE
+
 /////  Yarp stuff
 #include <yarp/os/Bottle.h>
 #include <yarp/os/Time.h>
@@ -157,7 +159,6 @@ struct SpeedEstimationParameters
     }
 };
 
-#undef IMPLEMENT_DEBUG_INTERFACE
 
 #ifdef _SETPOINT_TEST_
 typedef struct
@@ -182,7 +183,6 @@ using namespace yarp::dev;
 static void copyPid_iCub2eo(const Pid *in, eOmc_PID_t *out);
 static void copyPid_eo2iCub(eOmc_PID_t *in, Pid *out);
 
-
 class yarp::dev::embObjMotionControl:   public DeviceDriver,
     public IPidControlRaw,
     public IControlCalibration2Raw,
@@ -191,10 +191,8 @@ class yarp::dev::embObjMotionControl:   public DeviceDriver,
     public ImplementEncodersTimed,
     public IPositionControl2Raw,
     public IVelocityControl2Raw,
-    public IControlModeRaw,
-    public ImplementControlMode,
-//    public IControlMode2Raw,
-//    public ImplementControlMode2,
+    public IControlMode2Raw,
+    public ImplementControlMode2,
     public IControlLimits2Raw,
     public IImpedanceControlRaw,
     public ImplementImpedanceControl,
@@ -299,6 +297,17 @@ private:
     bool parsePosPidsGroup_OldFormat(Bottle& pidsGroup, int njoints, Pid myPid[]);
     bool parseTrqPidsGroup_OldFormat(Bottle& pidsGroup, int njoints, Pid myPid[]);
     bool parsePidsGroup_NewFormat(Bottle& pidsGroup, int njoints, Pid myPid[]);
+    bool getStatusBasic_withWait(const int n_joint, const int *joints, eOenum08_t *_modes);             // helper function
+    bool getInteractionMode_withWait(const int n_joint, const int *joints, eOenum08_t *_modes);     // helper function
+    bool interactionModeStatusConvert_embObj2yarp(eOenum08_t embObjMode, int &vocabOut);
+    bool interactionModeCommandConvert_yarp2embObj(int vocabMode, eOenum08_t &embOut);
+
+    bool controlModeCommandConvert_yarp2embObj(int vocabMode, eOenum08_t &embOut);
+    int  controlModeCommandConvert_embObj2yarp(eOmc_controlmode_command_t embObjMode);
+
+    bool controlModeStatusConvert_yarp2embObj(int vocabMode, eOmc_controlmode_t &embOut);
+    int  controlModeStatusConvert_embObj2yarp(eOenum08_t embObjMode);
+
 
 public:
     embObjMotionControl();
@@ -557,10 +566,10 @@ public:
     bool setPositionsRaw(const double *refs);
 
     // InteractionMode interface
-    bool getInteractionModeRaw(int axis, yarp::dev::InteractionModeEnum* mode);
+    bool getInteractionModeRaw(int j, yarp::dev::InteractionModeEnum* _mode);
     bool getInteractionModesRaw(int n_joints, int *joints, yarp::dev::InteractionModeEnum* modes);
     bool getInteractionModesRaw(yarp::dev::InteractionModeEnum* modes);
-    bool setInteractionModeRaw(int axis, yarp::dev::InteractionModeEnum mode);
+    bool setInteractionModeRaw(int j, yarp::dev::InteractionModeEnum _mode);
     bool setInteractionModesRaw(int n_joints, int *joints, yarp::dev::InteractionModeEnum* modes);
     bool setInteractionModesRaw(yarp::dev::InteractionModeEnum* modes);
 };
